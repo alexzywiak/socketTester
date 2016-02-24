@@ -6,18 +6,17 @@ var SocketTester = function(io, socketUrl, socketOptions){
   this.socketOptions = socketOptions;
   this.connections = [];
   this.testConditions = [];
+  this.timeout = 25;
 };
 
 SocketTester.prototype.run = function(clients, done){
 
-  var self = this;
-
   var sub = function(clients, idx){
 
     var client = clients[idx++];
-    var conn = self.io.connect(self.socketUrl, self.socketOptions);
+    var conn = this.io.connect(this.socketUrl, this.socketOptions);
 
-    self.connections.push({connection: conn, emit: client.emit});
+    this.connections.push({connection: conn, emit: client.emit});
 
     if(client.on){
       for(var event in client.on){
@@ -28,26 +27,30 @@ SocketTester.prototype.run = function(clients, done){
     conn.on('connect', function(){
       if(idx === clients.length){
 
-        self.connections.forEach(function(conn){
+        this.connections.forEach(function(conn){
           for(var event in conn.emit){
             conn.connection.emit(event, conn.emit[event]);
           }
-        });
+        }.bind(this));
 
       } else {
-        sub(clients, idx);
+        sub.call(this, clients, idx);
       }
-    });
+    }.bind(this));
   };
-  sub(clients, 0);
+
+  sub.call(this, clients, 0);
 
   if(done){
     setTimeout(function(){
-      self.testConditions.forEach(function(test){
+      this.testConditions.forEach(function(test){
         test();
       });
+      this.clearConnections();
       done();
-    }, 50);
+    }.bind(this), this.timeout);
+  } else {
+    this.clearConnections();
   }
 };
 
@@ -68,7 +71,14 @@ SocketTester.prototype.shouldBeCalledNTimesWithResults = function(expected){
 
   return function(actual){
     if(count < expected.length){
-      expect(actual).to.equal(expected[count]);
+
+      if(typeof expected[count] === 'function'){
+        expected[count](actual);
+      } else if (typeof expected[count] === 'object'){
+        expect(actual).to.eql(expected[count]);
+      } else {
+        expect(actual).to.equal(expected[count]);
+      }
     } else {
       expect(count).to.equal(expected.length);
     }
