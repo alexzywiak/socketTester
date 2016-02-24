@@ -62,7 +62,7 @@ describe('Sockets', function () {
             'message': socketTester.shouldBeCalledWith('test')
           },
           emit: {
-            'join room': 'test'
+            'join room': room
           }
         };
 

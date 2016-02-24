@@ -107,6 +107,10 @@ SocketTester.prototype.shouldBeCalledNTimes = function(n){
 SocketTester.prototype.shouldBeCalledNTimesWith = function(expected){
   var count = 0;
 
+  this.testConditions.push(function(){
+    expect(count).to.equal(expected.length);
+  });
+
   return function(actual){
     if(count < expected.length){
 
