@@ -1,6 +1,6 @@
 # socket-tester
 
-Socket-tester is an easy to use tool for testing Socket.io code with Mocha.  Socket-tester makes writing tests for Socket.io much easier, cleaner, and with much less messy boilerplate.
+Socket-tester is an easy to use tool for testing Socket.io code with Mocha.  Socket-tester makes writing tests for Socket.io easy, succint, and with a whole lot less messy boilerplate.
 
 It is designed to work with Mocha as a test framework and socket-io.client to manage creating client connections.
 
