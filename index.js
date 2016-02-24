@@ -1,5 +1,11 @@
 var expect = require('chai').expect;
 
+/**
+ * Constructor Function
+ * @param {obj} io              socket.io-client instance
+ * @param {string} socketUrl    socket url to connect to
+ * @param {obj} socketOptions   socket.io-client connection options
+ */
 var SocketTester = function(io, socketUrl, socketOptions){
   this.io = io;
   this.socketUrl = socketUrl;
@@ -9,6 +15,11 @@ var SocketTester = function(io, socketUrl, socketOptions){
   this.timeout = 25;
 };
 
+/**
+ * Creates connections, sets up listeners, and triggers events.
+ * @param  {array}   clients  Array of client objects
+ * @param  {Function} done    Mocha done function
+ */
 SocketTester.prototype.run = function(clients, done){
 
   var sub = function(clients, idx){
@@ -47,8 +58,15 @@ SocketTester.prototype.run = function(clients, done){
 
   if(done){
     setTimeout(function(){
+      var self = this;
       this.testConditions.forEach(function(test){
-        test();
+        try{
+          test();
+        } 
+        catch(e) {
+          self.clearConnections();
+          throw new Error(e);
+        }
       });
       this.clearConnections();
       done();
@@ -58,10 +76,18 @@ SocketTester.prototype.run = function(clients, done){
   }
 };
 
+/**
+ * Checks if event is called with expected value
+ * @param  {primitive|obj|function} expected Expected value to check against received value.  If passed a function, will invoke it passing the received value.
+ */
 SocketTester.prototype.shouldBeCalledWith = function(expected){
   return this.shouldBeCalledNTimesWith([expected]);
 };
 
+/**
+ * Tests how many times the functions is called
+ * @param  {[number]} n Target number of calls
+ */
 SocketTester.prototype.shouldBeCalledNTimes = function(n){
   var count = 0;
 
@@ -74,6 +100,10 @@ SocketTester.prototype.shouldBeCalledNTimes = function(n){
   }
 };
 
+/**
+ * Tests multiple calls of the function against an ordered list of expected values 
+ * @param  {[array]} expected An array of ordered expected outcomes.  Accepts primitive values, objects, and functions.
+ */
 SocketTester.prototype.shouldBeCalledNTimesWith = function(expected){
   var count = 0;
 
@@ -94,16 +124,27 @@ SocketTester.prototype.shouldBeCalledNTimesWith = function(expected){
   }
 };
 
+/**
+ * Tests that a function is not called
+ */
 SocketTester.prototype.shouldNotBeCalled = function(){
   return function(){
     expect('function was called').to.equal('function should not be called');
   }
 };
 
+/**
+ * Will emit an event a specified number of times with no arguments
+ * @param  {[number]} n number of times to emit event
+ */
 SocketTester.prototype.emitNTimes = function(n){
   return this.emitNTimesWith(new Array(n));
 };
 
+/**
+ * Will emit an event a specified number of times with ordered arguments
+ * @param  {[array]} expected  ordered list of values to be emitted with the event
+ */
 SocketTester.prototype.emitNTimesWith = function(expected){
   return function(conn, event){
     for(var i = 0; i < expected.length; i++){
@@ -112,10 +153,15 @@ SocketTester.prototype.emitNTimesWith = function(expected){
   };
 };
 
+/**
+ * Disconnects clients for the next test
+ */
 SocketTester.prototype.clearConnections = function(){
+  this.testConditions = [];
   this.connections.forEach(function(conn){
     conn.connection.disconnect();
   });
+  this.connections = [];
 };
 
 module.exports = SocketTester;
