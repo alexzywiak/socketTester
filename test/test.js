@@ -1,6 +1,8 @@
 var expect = require('chai').expect;
 var io     = require('socket.io-client');
 
+var app = require('../testServer/index');
+
 var SocketTester = require('../index');
 
 var socketUrl = 'http://localhost:3000';
@@ -16,15 +18,6 @@ var connections = [];
 
 
 describe('Sockets', function () {
-
-  beforeEach(function (done) {
-    var app = require('../testServer/index');
-    done();
-  });
-
-  // afterEach(function () {
-  //   socketTester.clearConnections();
-  // });
 
   it('should handle setup for multiple clients', function(done){
     var client1 = {
@@ -259,25 +252,25 @@ describe('Emit Event Helpers', function () {
   });
 
   describe('socket.emitNTimesWith', function () {
-          it('should test functions called n times with test functions', function(done){
-        var client1 = {
-          on: {
-            'message': socketTester.shouldBeCalledNTimesWith(['a', 'b'])
-          },
-          emit: {
-            'join room': room
-          }
-        };
+    it('should test functions called n times with test functions', function(done){
+      var client1 = {
+        on: {
+          'message': socketTester.shouldBeCalledNTimesWith(['a', 'b'])
+        },
+        emit: {
+          'join room': room
+        }
+      };
 
-        var client2 = {
-          emit: {
-            'join room': room,
-            'message': socketTester.emitNTimesWith(['a', 'b'])
-          }
-        };
+      var client2 = {
+        emit: {
+          'join room': room,
+          'message': socketTester.emitNTimesWith(['a', 'b'])
+        }
+      };
 
-        socketTester.run([client1, client2], done);
-      });
+      socketTester.run([client1, client2], done);
+    });
   });
 });
 
