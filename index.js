@@ -29,7 +29,11 @@ SocketTester.prototype.run = function(clients, done){
 
         this.connections.forEach(function(conn){
           for(var event in conn.emit){
-            conn.connection.emit(event, conn.emit[event]);
+            if(typeof conn.emit[event] === 'function'){
+              conn.emit[event](conn, event);
+            } else {
+              conn.connection.emit(event, conn.emit[event]);
+            }
           }
         }.bind(this));
 
@@ -54,6 +58,10 @@ SocketTester.prototype.run = function(clients, done){
   }
 };
 
+SocketTester.prototype.shouldBeCalledWith = function(expected){
+  return this.shouldBeCalledNTimesWith([expected]);
+};
+
 SocketTester.prototype.shouldBeCalledNTimes = function(n){
   var count = 0;
 
@@ -66,7 +74,7 @@ SocketTester.prototype.shouldBeCalledNTimes = function(n){
   }
 };
 
-SocketTester.prototype.shouldBeCalledNTimesWithResults = function(expected){
+SocketTester.prototype.shouldBeCalledNTimesWith = function(expected){
   var count = 0;
 
   return function(actual){
@@ -90,6 +98,18 @@ SocketTester.prototype.shouldNotBeCalled = function(){
   return function(){
     expect('function was called').to.equal('function should not be called');
   }
+};
+
+SocketTester.prototype.emitNTimes = function(n){
+  return this.emitNTimesWith(new Array(n));
+};
+
+SocketTester.prototype.emitNTimesWith = function(expected){
+  return function(conn, event){
+    for(var i = 0; i < expected.length; i++){
+      conn.connection.emit(event, expected[i]);
+    }
+  };
 };
 
 SocketTester.prototype.clearConnections = function(){
