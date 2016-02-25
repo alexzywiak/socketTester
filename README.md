@@ -4,9 +4,11 @@ Socket-tester is an easy to use tool for testing Socket.io code with Mocha.  Soc
 
 It is designed to work with Mocha as a test framework and socket-io.client to manage creating client connections.
 
+Check out the [Github Repo](https://github.com/alexzywiak/socketTester)
+
 ## Introduction
 
-Writing code testing the interactions of multiple clients for Socket.io quickly leads to a messy nest of connect callbacks and setTimeout calls.  Socket-tester handles all the repetitive boilerplate of setting up client connections, setting up event handlers, and tearing down connections after the tests are run.  Its syntax is flat, concise and easy to use without having to manage nested connect statements. It also includes a number of flexible helper functions that test for the most common use cases.  Socket-tester makes writing tests for Socket.io code as easy as using the Socket.io itself.
+Writing code testing the interactions of multiple clients for Socket.io quickly leads to a messy nest of connect callbacks and setTimeout calls.  Socket-tester handles all the repetitive boilerplate of setting up client connections, setting up event handlers, and tearing down connections after the tests are run.  Its syntax is flat, concise and easy to use without having to manage nested connect statements. It also includes a number of flexible helper functions that test for the most common use cases.  Socket-tester makes writing tests for Socket.io code as easy as using Socket.io itself.
 
 # Installation
 
