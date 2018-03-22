@@ -6,13 +6,13 @@ var expect = require('chai').expect;
  * @param {string} socketUrl    socket url to connect to
  * @param {obj} socketOptions   socket.io-client connection options
  */
-var SocketTester = function(io, socketUrl, socketOptions){
+var SocketTester = function(io, socketUrl, socketOptions, timeout){
   this.io = io;
   this.socketUrl = socketUrl;
   this.socketOptions = socketOptions;
   this.connections = [];
   this.testConditions = [];
-  this.timeout = 25;
+  this.timeout = timeout;
 };
 
 /**
@@ -97,7 +97,7 @@ SocketTester.prototype.shouldBeCalledNTimes = function(n){
 
   return function(){
     count++;
-  }
+  };
 };
 
 /**
@@ -125,7 +125,7 @@ SocketTester.prototype.shouldBeCalledNTimesWith = function(expected){
       expect(count).to.equal(expected.length);
     }
     count++;
-  }
+  };
 };
 
 /**
@@ -134,7 +134,7 @@ SocketTester.prototype.shouldBeCalledNTimesWith = function(expected){
 SocketTester.prototype.shouldNotBeCalled = function(){
   return function(){
     expect('function was called').to.equal('function should not be called');
-  }
+  };
 };
 
 /**
